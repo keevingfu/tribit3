@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tribit Social Media Content Marketing Phase 2 - Performance Analysis</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #2563eb 100%);
+            color: #1f2937;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 56px;
+            position: relative;
+            padding-bottom: 32px;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb 0%, #10b981 100%);
+            border-radius: 2px;
+        }
+        
+        .header h1 {
+            color: #1e293b;
+            font-size: 42px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .header .subtitle {
+            color: #64748b;
+            font-size: 20px;
+            font-weight: 300;
+        }
+        
+        .header .date-range {
+            color: #94a3b8;
+            font-size: 16px;
+            margin-top: 8px;
+        }
+        
+        .summary-section {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            border-radius: 20px;
+            padding: 48px;
+            color: white;
+            margin-bottom: 56px;
+            box-shadow: 0 20px 60px rgba(37, 99, 235, 0.3);
+        }
+        
+        .summary-title {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 32px;
+            font-weight: 600;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .summary-label {
+            font-size: 16px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .kpi-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 56px;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-top: 4px solid transparent;
+            position: relative;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        }
+        
+        .kpi-card.excellent {
+            border-top-color: #10b981;
+        }
+        
+        .kpi-card.outstanding {
+            border-top-color: #7c3aed;
+        }
+        
+        .kpi-trend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+        }
+        
+        .kpi-title {
+            font-size: 14px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .kpi-value {
+            font-size: 40px;
+            font-weight: 700;
+            color: #1f2937;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        
+        .kpi-detail {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+        
+        .kpi-growth {
+            font-size: 12px;
+            color: #10b981;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            margin-bottom: 56px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+        
+        .chart-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        
+        .chart {
+            width: 100%;
+            height: 400px;
+        }
+        
+        .chart-insight {
+            margin-top: 24px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+        }
+        
+        .insight-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .insight-text {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+        
+        .comparison-section {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 48px;
+            margin-bottom: 56px;
+        }
+        
+        .comparison-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 40px;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+        }
+        
+        .comparison-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+        
+        .comparison-label {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+        
+        .comparison-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        
+        .comparison-change {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .comparison-change.positive {
+            color: #10b981;
+        }
+        
+        .comparison-change.negative {
+            color: #ef4444;
+        }
+        
+        .strategic-insights {
+            background: white;
+            border-radius: 20px;
+            padding: 48px;
+            margin-top: 56px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+        
+        .insights-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 40px;
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+        }
+        
+        .insight-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .insight-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+        
+        .insight-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+        
+        .insight-card-text {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 56px;
+            padding-top: 32px;
+            border-top: 1px solid #e5e7eb;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 24px;
+            }
+            
+            .header h1 {
+                font-size: 28px;
+            }
+            
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .kpi-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Tribit Social Media Content Marketing Phase 2</h1>
+            <div class="subtitle">Performance Excellence Analysis</div>
+            <div class="date-range">April 28, 2025 - July 24, 2025</div>
+        </div>
+        
+        <!-- Project Summary -->
+        <div class="summary-section">
+            <h2 class="summary-title">Phase 2 Achievement Overview</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-value">13</div>
+                    <div class="summary-label">Weeks Tracked</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">8.74M</div>
+                    <div class="summary-label">Total Views</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">66K</div>
+                    <div class="summary-label">Total Engagements</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">243%</div>
+                    <div class="summary-label">Peak Performance</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Current Performance KPIs -->
+        <div class="kpi-section">
+            <div class="kpi-card excellent">
+                <span class="kpi-trend">📈</span>
+                <div class="kpi-title">Team Stability</div>
+                <div class="kpi-value">100%</div>
+                <div class="kpi-detail">Consistent 18 members</div>
+                <div class="kpi-growth">13 weeks perfect record</div>
+            </div>
+            
+            <div class="kpi-card outstanding">
+                <span class="kpi-trend">🚀</span>
+                <div class="kpi-title">Views Performance</div>
+                <div class="kpi-value">243%</div>
+                <div class="kpi-detail">Latest week achievement</div>
+                <div class="kpi-growth">+647% from Week 1</div>
+            </div>
+            
+            <div class="kpi-card outstanding">
+                <span class="kpi-trend">💫</span>
+                <div class="kpi-title">Engagement Rate</div>
+                <div class="kpi-value">367%</div>
+                <div class="kpi-detail">Latest week achievement</div>
+                <div class="kpi-growth">+1,184% from Week 1</div>
+            </div>
+            
+            <div class="kpi-card excellent">
+                <span class="kpi-trend">⚡</span>
+                <div class="kpi-title">Average Completion</div>
+                <div class="kpi-value">189%</div>
+                <div class="kpi-detail">Across all metrics</div>
+                <div class="kpi-growth">Exceeding all targets</div>
+            </div>
+        </div>
+        
+        <!-- Charts Section -->
+        <div class="charts-grid">
+            <!-- Performance Trend Analysis -->
+            <div class="chart-card">
+                <h3 class="chart-title">Weekly Performance Evolution</h3>
+                <div id="performanceTrendChart" class="chart"></div>
+                <div class="chart-insight">
+                    <div class="insight-title">
+                        <span>📊</span> Key Insight
+                    </div>
+                    <div class="insight-text">
+                        <strong>Finding:</strong> Views experienced explosive growth from Week 2 (98%→162%), maintaining above 150% performance consistently. Final week shows unprecedented 243% views and 367% engagement.<br>
+                        <strong>Recommendation:</strong> Analyze content patterns from Week 11 for viral factors. Implement similar strategies across all content categories to sustain momentum.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Growth Acceleration Chart -->
+            <div class="chart-card">
+                <h3 class="chart-title">Growth Acceleration Analysis</h3>
+                <div id="growthAccelerationChart" class="chart"></div>
+                <div class="chart-insight">
+                    <div class="insight-title">
+                        <span>🚀</span> Key Insight
+                    </div>
+                    <div class="insight-text">
+                        <strong>Finding:</strong> Week-over-week growth shows significant spikes at Week 2 (+66% views) and Week 11 (+57% views, +92% engagement).<br>
+                        <strong>Recommendation:</strong> Identify common factors in high-growth weeks. Consider scheduling major campaigns during similar periods for maximum impact.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Monthly Target Achievement -->
+            <div class="chart-card">
+                <h3 class="chart-title">Monthly Target Achievement</h3>
+                <div id="monthlyAchievementChart" class="chart"></div>
+                <div class="chart-insight">
+                    <div class="insight-title">
+                        <span>🎯</span> Key Insight
+                    </div>
+                    <div class="insight-text">
+                        <strong>Finding:</strong> June achieved highest overall performance (221% views, 271% engagement). July showing strongest single-week performance.<br>
+                        <strong>Recommendation:</strong> June's strategies proved most effective. Document and standardize these approaches for consistent application.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Efficiency Metrics -->
+            <div class="chart-card">
+                <h3 class="chart-title">Content Efficiency Evolution</h3>
+                <div id="efficiencyChart" class="chart"></div>
+                <div class="chart-insight">
+                    <div class="insight-title">
+                        <span>⚡</span> Key Insight
+                    </div>
+                    <div class="insight-text">
+                        <strong>Finding:</strong> Engagement efficiency improved from 0.44% to 0.76%, while maintaining high view volumes. This indicates better content-audience fit.<br>
+                        <strong>Recommendation:</strong> Continue optimizing for engagement quality. Test interactive content formats to push engagement rate above 1%.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Heatmap -->
+            <div class="chart-card">
+                <h3 class="chart-title">Performance Intensity Heatmap</h3>
+                <div id="heatmapChart" class="chart"></div>
+                <div class="chart-insight">
+                    <div class="insight-title">
+                        <span>🔥</span> Key Insight
+                    </div>
+                    <div class="insight-text">
+                        <strong>Finding:</strong> Performance intensity increased consistently, with July showing highest concentration of exceptional results.<br>
+                        <strong>Recommendation:</strong> Leverage high-performance periods for product launches and major campaigns. Plan content calendar around peak performance patterns.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Comparative Analysis -->
+            <div class="chart-card">
+                <h3 class="chart-title">Phase 1 vs Phase 2 Comparison</h3>
+                <div id="comparisonChart" class="chart"></div>
+                <div class="chart-insight">
+                    <div class="insight-title">
+                        <span>📈</span> Key Insight
+                    </div>
+                    <div class="insight-text">
+                        <strong>Finding:</strong> Phase 2 shows 162% improvement in average performance vs Phase 1, with significantly higher consistency and peak achievements.<br>
+                        <strong>Recommendation:</strong> Phase 2 strategies are proven superior. Consolidate learnings and prepare for Phase 3 with even more ambitious targets.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Phase Comparison Section -->
+        <div class="comparison-section">
+            <h2 class="comparison-title">Phase 1 vs Phase 2 Performance Metrics</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <div class="comparison-label">Average Views Completion</div>
+                    <div class="comparison-value">169%</div>
+                    <div class="comparison-change positive">+82% vs Phase 1</div>
+                </div>
+                <div class="comparison-card">
+                    <div class="comparison-label">Average Engagement Completion</div>
+                    <div class="comparison-value">210%</div>
+                    <div class="comparison-change positive">+76% vs Phase 1</div>
+                </div>
+                <div class="comparison-card">
+                    <div class="comparison-label">Peak Performance Week</div>
+                    <div class="comparison-value">305%</div>
+                    <div class="comparison-change positive">+31% vs Phase 1</div>
+                </div>
+                <div class="comparison-card">
+                    <div class="comparison-label">Consistency Score</div>
+                    <div class="comparison-value">94%</div>
+                    <div class="comparison-change positive">+18% vs Phase 1</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Strategic Insights -->
+        <div class="strategic-insights">
+            <h2 class="insights-title">Strategic Insights & Action Plans</h2>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon">🏆</div>
+                    <div class="insight-card-title">Performance Excellence</div>
+                    <div class="insight-card-text">
+                        Phase 2 demonstrates exceptional performance with 243% peak achievement and consistent above-target delivery. The team has mastered content creation at scale while maintaining quality. Focus on documenting and systematizing these winning strategies.
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-icon">📊</div>
+                    <div class="insight-card-title">Viral Content Formula</div>
+                    <div class="insight-card-text">
+                        Week 11's explosive 367% engagement suggests discovery of viral content patterns. Conduct deep analysis of top-performing content to identify replicable elements: timing, format, topics, and engagement triggers.
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-icon">🎯</div>
+                    <div class="insight-card-title">Target Optimization</div>
+                    <div class="insight-card-text">
+                        Current targets may be too conservative given consistent overperformance. Consider raising Phase 3 targets by 50-75% to match team capabilities and maintain growth momentum without causing burnout.
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-icon">💡</div>
+                    <div class="insight-card-title">Engagement Strategy</div>
+                    <div class="insight-card-text">
+                        While views excel, engagement rate improvement from 0.44% to 0.76% shows room for growth. Implement engagement-first content strategy: polls, challenges, user-generated content campaigns, and interactive formats.
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-icon">🚀</div>
+                    <div class="insight-card-title">Scaling Opportunities</div>
+                    <div class="insight-card-text">
+                        With proven ability to exceed targets by 2-3x, explore scaling opportunities: new platforms, content verticals, or geographic markets. Current team efficiency suggests capacity for 30-40% more output.
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-icon">📈</div>
+                    <div class="insight-card-title">Phase 3 Readiness</div>
+                    <div class="insight-card-text">
+                        Team demonstrates maturity for advanced strategies. Phase 3 should focus on: monetization optimization, cross-platform synergies, influencer collaborations, and AI-powered content personalization at scale.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Tribit Social Media Content Marketing Phase 2 Analysis | Data through July 24, 2025</p>
+        </div>
+    </div>
+    
+    <script>
+        // Performance Trend Chart
+        const performanceTrendChart = echarts.init(document.getElementById('performanceTrendChart'));
+        const weeks = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10', 'W11'];
+        const performanceTrendOption = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            legend: {
+                data: ['Views Completion %', 'Engagement Completion %', 'Target Line'],
+                bottom: '5%'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                top: '5%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: weeks,
+                boundaryGap: false
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Completion %',
+                axisLabel: {
+                    formatter: '{value}%'
+                }
+            },
+            series: [
+                {
+                    name: 'Views Completion %',
+                    type: 'line',
+                    data: [98, 162, 207, 169, 177, 196, 212, 221, 147, 155, 243],
+                    smooth: true,
+                    lineStyle: { width: 3 },
+                    itemStyle: { color: '#2563eb' },
+                    areaStyle: { 
+                        opacity: 0.2,
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {offset: 0, color: '#2563eb'},
+                            {offset: 1, color: '#2563eb00'}
+                        ])
+                    }
+                },
+                {
+                    name: 'Engagement Completion %',
+                    type: 'line',
+                    data: [86, 148, 198, 213, 224, 243, 258, 271, 181, 191, 367],
+                    smooth: true,
+                    lineStyle: { width: 3 },
+                    itemStyle: { color: '#7c3aed' },
+                    areaStyle: { 
+                        opacity: 0.2,
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {offset: 0, color: '#7c3aed'},
+                            {offset: 1, color: '#7c3aed00'}
+                        ])
+                    }
+                },
+                {
+                    name: 'Target Line',
+                    type: 'line',
+                    data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+                    lineStyle: { 
+                        width: 2, 
+                        type: 'dashed',
+                        color: '#ef4444'
+                    },
+                    symbol: 'none'
+                }
+            ]
+        };
+        performanceTrendChart.setOption(performanceTrendOption);
+        
+        // Growth Acceleration Chart
+        const growthAccelerationChart = echarts.init(document.getElementById('growthAccelerationChart'));
+        const growthAccelerationOption = {
+            tooltip: {
+                trigger: 'axis',
+                formatter: function(params) {
+                    let result = params[0].name + '<br/>';
+                    params.forEach(function(item) {
+                        result += item.marker + item.seriesName + ': ' + 
+                                 (item.value > 0 ? '+' : '') + item.value + '%<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['Views Growth %', 'Engagement Growth %'],
+                bottom: '5%'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                top: '5%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10', 'W11']
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Week-over-Week Growth %',
+                axisLabel: {
+                    formatter: '{value}%'
+                }
+            },
+            series: [
+                {
+                    name: 'Views Growth %',
+                    type: 'bar',
+                    data: [66, 28, -18, 5, 11, 8, 4, -34, 5, 57],
+                    itemStyle: {
+                        color: function(params) {
+                            return params.value > 0 ? '#10b981' : '#ef4444';
+                        }
+                    }
+                },
+                {
+                    name: 'Engagement Growth %',
+                    type: 'line',
+                    data: [73, 34, 8, 5, 9, 6, 5, -33, 6, 92],
+                    smooth: true,
+                    lineStyle: { width: 3 },
+                    itemStyle: { color: '#7c3aed' },
+                    markPoint: {
+                        data: [
+                            {type: 'max', name: 'Peak'},
+                            {type: 'min', name: 'Low'}
+                        ]
+                    }
+                }
+            ]
+        };
+        growthAccelerationChart.setOption(growthAccelerationOption);
+        
+        // Monthly Achievement Chart
+        const monthlyAchievementChart = echarts.init(document.getElementById('monthlyAchievementChart'));
+        const monthlyAchievementOption = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['Views Achievement', 'Engagement Achievement'],
+                bottom: '5%'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                top: '5%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['May Week 1-2', 'May Week 3', 'June Week 1-4', 'July Week 1-3']
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Achievement %',
+                axisLabel: {
+                    formatter: '{value}%'
+                }
+            },
+            series: [
+                {
+                    name: 'Views Achievement',
+                    type: 'bar',
+                    data: [162, 207, 221, 243],
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {offset: 0, color: '#60a5fa'},
+                            {offset: 1, color: '#2563eb'}
+                        ])
+                    }
+                },
+                {
+                    name: 'Engagement Achievement',
+                    type: 'bar',
+                    data: [148, 198, 271, 367],
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {offset: 0, color: '#c084fc'},
+                            {offset: 1, color: '#7c3aed'}
+                        ])
+                    }
+                }
+            ]
+        };
+        monthlyAchievementChart.setOption(monthlyAchievementOption);
+        
+        // Efficiency Chart
+        const efficiencyChart = echarts.init(document.getElementById('efficiencyChart'));
+        const efficiencyOption = {
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['Absolute Views (M)', 'Engagement Rate (%)'],
+                bottom: '5%'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                top: '5%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: weeks
+            },
+            yAxis: [
+                {
+                    type: 'value',
+                    name: 'Views (M)',
+                    position: 'left'
+                },
+                {
+                    type: 'value',
+                    name: 'Engagement Rate (%)',
+                    position: 'right',
+                    axisLabel: {
+                        formatter: '{value}%'
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: 'Absolute Views (M)',
+                    type: 'bar',
+                    data: [1.17, 1.94, 2.48, 4.06, 4.25, 4.71, 5.08, 5.30, 5.30, 5.56, 8.74],
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {offset: 0, color: '#60a5fa'},
+                            {offset: 1, color: '#2563eb'}
+                        ])
+                    }
+                },
+                {
+                    name: 'Engagement Rate (%)',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    data: [0.44, 0.46, 0.48, 0.63, 0.63, 0.62, 0.61, 0.61, 0.61, 0.62, 0.76],
+                    smooth: true,
+                    lineStyle: { width: 3 },
+                    itemStyle: { color: '#ef4444' },
+                    markArea: {
+                        data: [[{
+                            name: 'Target Range',
+                            yAxis: 0.5
+                        }, {
+                            yAxis: 1.0
+                        }]],
+                        itemStyle: {
+                            color: 'rgba(16, 185, 129, 0.1)'
+                        }
+                    }
+                }
+            ]
+        };
+        efficiencyChart.setOption(efficiencyOption);
+        
+        // Performance Heatmap
+        const heatmapChart = echarts.init(document.getElementById('heatmapChart'));
+        const heatmapOption = {
+            tooltip: {
+                position: 'top',
+                formatter: function (params) {
+                    return `Week ${params.data[0] + 1}: ${params.data[1] === 0 ? 'Views' : 'Engagement'} - ${params.data[2]}%`;
+                }
+            },
+            grid: {
+                left: '10%',
+                right: '10%',
+                bottom: '15%',
+                top: '10%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: weeks,
+                splitArea: {
+                    show: true
+                }
+            },
+            yAxis: {
+                type: 'category',
+                data: ['Views Performance', 'Engagement Performance'],
+                splitArea: {
+                    show: true
+                }
+            },
+            visualMap: {
+                min: 80,
+                max: 370,
+                calculable: true,
+                orient: 'horizontal',
+                left: 'center',
+                bottom: '0%',
+                inRange: {
+                    color: ['#e0e7ff', '#6366f1', '#4f46e5', '#4338ca', '#3730a3']
+                }
+            },
+            series: [{
+                name: 'Performance Heatmap',
+                type: 'heatmap',
+                data: [
+                    [0, 0, 98], [1, 0, 162], [2, 0, 207], [3, 0, 169], [4, 0, 177], 
+                    [5, 0, 196], [6, 0, 212], [7, 0, 221], [8, 0, 147], [9, 0, 155], [10, 0, 243],
+                    [0, 1, 86], [1, 1, 148], [2, 1, 198], [3, 1, 213], [4, 1, 224], 
+                    [5, 1, 243], [6, 1, 258], [7, 1, 271], [8, 1, 181], [9, 1, 191], [10, 1, 367]
+                ],
+                label: {
+                    show: true,
+                    formatter: '{c}%'
+                },
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }]
+        };
+        heatmapChart.setOption(heatmapOption);
+        
+        // Phase Comparison Chart
+        const comparisonChart = echarts.init(document.getElementById('comparisonChart'));
+        const comparisonOption = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['Phase 1', 'Phase 2'],
+                bottom: '5%'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                top: '5%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['Avg Views %', 'Avg Engagement %', 'Peak Performance %', 'Consistency Score', 'Team Stability']
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Performance %',
+                axisLabel: {
+                    formatter: '{value}%'
+                }
+            },
+            series: [
+                {
+                    name: 'Phase 1',
+                    type: 'bar',
+                    data: [93, 119, 274, 76, 100],
+                    itemStyle: {
+                        color: '#94a3b8'
+                    }
+                },
+                {
+                    name: 'Phase 2',
+                    type: 'bar',
+                    data: [169, 210, 305, 94, 100],
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {offset: 0, color: '#7c3aed'},
+                            {offset: 1, color: '#2563eb'}
+                        ])
+                    },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        formatter: function(params) {
+                            const phase1Value = comparisonOption.series[0].data[params.dataIndex];
+                            const improvement = ((params.value - phase1Value) / phase1Value * 100).toFixed(0);
+                            return improvement > 0 ? `+${improvement}%` : `${improvement}%`;
+                        }
+                    }
+                }
+            ]
+        };
+        comparisonChart.setOption(comparisonOption);
+        
+        // Responsive handling
+        window.addEventListener('resize', function() {
+            performanceTrendChart.resize();
+            growthAccelerationChart.resize();
+            monthlyAchievementChart.resize();
+            efficiencyChart.resize();
+            heatmapChart.resize();
+            comparisonChart.resize();
+        });
+    </script>
+</body>
+</html>

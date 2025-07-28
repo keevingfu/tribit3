@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Short Video Content Empowers Amazon SBV Advertising</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+            padding-bottom: 30px;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff9a00 0%, #ff5200 100%);
+            border-radius: 2px;
+        }
+        
+        .header h1 {
+            color: #0f2027;
+            font-size: 42px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+        
+        .header .subtitle {
+            color: #666;
+            font-size: 20px;
+            font-weight: 300;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff9a00 0%, #ff5200 100%);
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        }
+        
+        .metric-card.primary {
+            background: linear-gradient(135deg, #ff9a00 0%, #ff5200 100%);
+            color: white;
+        }
+        
+        .metric-card.success {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: white;
+        }
+        
+        .metric-card.info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .metric-card.warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+        
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+        
+        .metric-detail {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .chart-section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            color: #0f2027;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #ff9a00;
+            border-radius: 2px;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+        
+        .chart {
+            width: 100%;
+            height: 450px;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .performance-table {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #0f2027;
+            border-bottom: 2px solid #e9ecef;
+            white-space: nowrap;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .roi-positive {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .roi-negative {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        
+        .insights-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 50px;
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .insight-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .insight-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff9a00 0%, #ff5200 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .insight-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #0f2027;
+        }
+        
+        .insight-text {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #e9ecef;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Short Video Content Empowers Amazon SBV Advertising</h1>
+            <div class="subtitle">Performance Analysis Dashboard</div>
+        </div>
+        
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card primary">
+                <div class="metric-label">Total Ad Spend</div>
+                <div class="metric-value">$2,825</div>
+                <div class="metric-detail">Across 4 markets</div>
+            </div>
+            
+            <div class="metric-card success">
+                <div class="metric-label">Total Orders</div>
+                <div class="metric-value">44</div>
+                <div class="metric-detail">33.3% campaigns converted</div>
+            </div>
+            
+            <div class="metric-card info">
+                <div class="metric-label">Total Revenue</div>
+                <div class="metric-value">$8,567</div>
+                <div class="metric-detail">303% overall ROI</div>
+            </div>
+            
+            <div class="metric-card warning">
+                <div class="metric-label">Active Campaigns</div>
+                <div class="metric-value">12</div>
+                <div class="metric-detail">7 product variations</div>
+            </div>
+        </div>
+        
+        <!-- Regional Performance -->
+        <div class="chart-section">
+            <h2 class="section-title">Regional Performance Analysis</h2>
+            <div class="two-column">
+                <div class="chart-container">
+                    <div id="regionalChart" class="chart"></div>
+                </div>
+                <div class="chart-container">
+                    <div id="conversionChart" class="chart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Product Performance -->
+        <div class="chart-section">
+            <h2 class="section-title">Product Performance Breakdown</h2>
+            <div class="chart-container">
+                <div id="productChart" class="chart"></div>
+            </div>
+        </div>
+        
+        <!-- ROI Analysis -->
+        <div class="chart-section">
+            <h2 class="section-title">ROI & Efficiency Analysis</h2>
+            <div class="two-column">
+                <div class="chart-container">
+                    <div id="roiChart" class="chart"></div>
+                </div>
+                <div class="chart-container">
+                    <div id="timelineChart" class="chart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Detailed Performance Table -->
+        <div class="performance-table">
+            <h2 class="section-title">Campaign Performance Details</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Market</th>
+                        <th>Product</th>
+                        <th>Ad Spend</th>
+                        <th>Orders</th>
+                        <th>Revenue</th>
+                        <th>ROI</th>
+                        <th>CPA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>🇺🇸 US</td>
+                        <td>Bike Mount</td>
+                        <td>$1,031.49</td>
+                        <td>35</td>
+                        <td>$2,383.22</td>
+                        <td class="roi-positive">+131%</td>
+                        <td>$29.47</td>
+                    </tr>
+                    <tr>
+                        <td>🇩🇪 DE</td>
+                        <td>Pool Speaker 56</td>
+                        <td>€232.63</td>
+                        <td>7</td>
+                        <td>€651.29</td>
+                        <td class="roi-positive">+180%</td>
+                        <td>€33.23</td>
+                    </tr>
+                    <tr>
+                        <td>🇮🇳 IN</td>
+                        <td>BTS51 Series</td>
+                        <td>₹3,136.67</td>
+                        <td>2</td>
+                        <td>₹6,184.74</td>
+                        <td class="roi-positive">+97%</td>
+                        <td>₹1,568.34</td>
+                    </tr>
+                    <tr>
+                        <td>🇬🇧 UK</td>
+                        <td>Multiple</td>
+                        <td>€70.95</td>
+                        <td>0</td>
+                        <td>€0</td>
+                        <td class="roi-negative">-100%</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Key Insights -->
+        <div class="insights-section">
+            <h2 class="section-title">Key Insights & Recommendations</h2>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon">🎯</div>
+                    <div class="insight-title">Top Performing Market</div>
+                    <div class="insight-text">US market shows exceptional performance with 35 orders and 131% ROI. Bike mount content resonates strongly with American consumers.</div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-icon">📹</div>
+                    <div class="insight-title">Content Strategy</div>
+                    <div class="insight-text">Pool-related content (56 speaker) performs well in Germany. Focus on seasonal and lifestyle-oriented video content for better engagement.</div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-icon">💡</div>
+                    <div class="insight-title">Optimization Opportunity</div>
+                    <div class="insight-text">UK market shows no conversions. Consider localizing content or adjusting targeting strategy for better market penetration.</div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-icon">📊</div>
+                    <div class="insight-title">Cost Efficiency</div>
+                    <div class="insight-text">Average CPA of $64.20 with 303% overall ROI indicates healthy campaign performance. Scale successful campaigns in US and DE markets.</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Amazon SBV Advertising Performance Dashboard | Data Analysis Report</p>
+        </div>
+    </div>
+    
+    <script>
+        // Regional Performance Chart
+        const regionalChart = echarts.init(document.getElementById('regionalChart'));
+        const regionalOption = {
+            title: {
+                text: 'Ad Spend by Region',
+                left: 'center',
+                textStyle: {
+                    fontSize: 20,
+                    fontWeight: 'normal'
+                }
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b}: ${c} ({d}%)'
+            },
+            legend: {
+                bottom: '5%',
+                left: 'center'
+            },
+            series: [{
+                name: 'Ad Spend',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                itemStyle: {
+                    borderRadius: 10,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                },
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: '30',
+                        fontWeight: 'bold'
+                    }
+                },
+                labelLine: {
+                    show: false
+                },
+                data: [
+                    {value: 1031.49, name: 'US', itemStyle: {color: '#3a7bd5'}},
+                    {value: 284.12, name: 'DE', itemStyle: {color: '#00d2ff'}},
+                    {value: 48.47, name: 'IN', itemStyle: {color: '#f5576c'}},
+                    {value: 86.80, name: 'UK', itemStyle: {color: '#f093fb'}}
+                ]
+            }]
+        };
+        regionalChart.setOption(regionalOption);
+        
+        // Conversion Rate Chart
+        const conversionChart = echarts.init(document.getElementById('conversionChart'));
+        const conversionOption = {
+            title: {
+                text: 'Conversion Performance by Market',
+                left: 'center',
+                textStyle: {
+                    fontSize: 20,
+                    fontWeight: 'normal'
+                }
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['US', 'DE', 'IN', 'UK']
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Orders'
+            },
+            series: [{
+                name: 'Orders',
+                type: 'bar',
+                data: [
+                    {value: 35, itemStyle: {color: '#3a7bd5'}},
+                    {value: 7, itemStyle: {color: '#00d2ff'}},
+                    {value: 2, itemStyle: {color: '#f5576c'}},
+                    {value: 0, itemStyle: {color: '#f093fb'}}
+                ],
+                label: {
+                    show: true,
+                    position: 'top'
+                }
+            }]
+        };
+        conversionChart.setOption(conversionOption);
+        
+        // Product Performance Chart
+        const productChart = echarts.init(document.getElementById('productChart'));
+        const productOption = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            },
+            legend: {
+                data: ['Ad Spend ($)', 'Revenue ($)', 'Orders'],
+                top: '5%'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                top: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['Bike Mount', 'Pool Speaker 56', 'BTS51 Series', 'Stormbox Blast', 'Bike Speaker 12'],
+                axisLabel: {
+                    interval: 0,
+                    rotate: 45
+                }
+            },
+            yAxis: [
+                {
+                    type: 'value',
+                    name: 'Amount ($)',
+                    position: 'left'
+                },
+                {
+                    type: 'value',
+                    name: 'Orders',
+                    position: 'right'
+                }
+            ],
+            series: [
+                {
+                    name: 'Ad Spend ($)',
+                    type: 'bar',
+                    data: [1031.49, 284.12, 48.47, 41.46, 23.80],
+                    itemStyle: {
+                        color: '#ff9a00'
+                    }
+                },
+                {
+                    name: 'Revenue ($)',
+                    type: 'bar',
+                    data: [2383.22, 797.05, 95.48, 0, 0],
+                    itemStyle: {
+                        color: '#3a7bd5'
+                    }
+                },
+                {
+                    name: 'Orders',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    data: [35, 7, 2, 0, 0],
+                    itemStyle: {
+                        color: '#f5576c'
+                    },
+                    lineStyle: {
+                        width: 3
+                    }
+                }
+            ]
+        };
+        productChart.setOption(productOption);
+        
+        // ROI Chart
+        const roiChart = echarts.init(document.getElementById('roiChart'));
+        const roiOption = {
+            title: {
+                text: 'ROI by Product Category',
+                left: 'center',
+                textStyle: {
+                    fontSize: 20,
+                    fontWeight: 'normal'
+                }
+            },
+            tooltip: {
+                trigger: 'axis',
+                formatter: '{b}: {c}%'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                name: 'ROI (%)',
+                axisLabel: {
+                    formatter: '{value}%'
+                }
+            },
+            yAxis: {
+                type: 'category',
+                data: ['Pool Speaker', 'Bike Mount', 'BTS51 Series', 'Others']
+            },
+            series: [{
+                name: 'ROI',
+                type: 'bar',
+                data: [180, 131, 97, -100],
+                itemStyle: {
+                    color: function(params) {
+                        return params.value > 0 ? '#00d2ff' : '#f5576c';
+                    }
+                },
+                label: {
+                    show: true,
+                    position: 'right',
+                    formatter: '{c}%'
+                }
+            }]
+        };
+        roiChart.setOption(roiOption);
+        
+        // Timeline Performance Chart
+        const timelineChart = echarts.init(document.getElementById('timelineChart'));
+        const timelineOption = {
+            title: {
+                text: 'Campaign Timeline & Performance',
+                left: 'center',
+                textStyle: {
+                    fontSize: 20,
+                    fontWeight: 'normal'
+                }
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['Active Campaigns', 'Cumulative Orders'],
+                bottom: '5%'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['Apr', 'May', 'Jun', 'Jul'],
+                boundaryGap: false
+            },
+            yAxis: [
+                {
+                    type: 'value',
+                    name: 'Campaigns',
+                    position: 'left'
+                },
+                {
+                    type: 'value',
+                    name: 'Orders',
+                    position: 'right'
+                }
+            ],
+            series: [
+                {
+                    name: 'Active Campaigns',
+                    type: 'line',
+                    data: [3, 5, 10, 12],
+                    itemStyle: {
+                        color: '#ff9a00'
+                    },
+                    areaStyle: {
+                        opacity: 0.3
+                    }
+                },
+                {
+                    name: 'Cumulative Orders',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    data: [2, 8, 25, 44],
+                    itemStyle: {
+                        color: '#3a7bd5'
+                    },
+                    areaStyle: {
+                        opacity: 0.3
+                    }
+                }
+            ]
+        };
+        timelineChart.setOption(timelineOption);
+        
+        // Responsive handling
+        window.addEventListener('resize', function() {
+            regionalChart.resize();
+            conversionChart.resize();
+            productChart.resize();
+            roiChart.resize();
+            timelineChart.resize();
+        });
+    </script>
+</body>
+</html>

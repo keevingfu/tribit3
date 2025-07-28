@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tribit KOL Performance Analysis Dashboard 2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #8892b0;
+            font-size: 1.1em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(22, 33, 62, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card h3 {
+            color: #8892b0;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .chart-container {
+            background: rgba(22, 33, 62, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .chart-container h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .chart {
+            width: 100%;
+            height: 400px;
+        }
+
+        .insights-section {
+            background: rgba(22, 33, 62, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .insights-section h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .insight-item {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .insight-item::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+
+        /* Video Cards Section */
+        .video-section {
+            background: rgba(22, 33, 62, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .video-section h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .region-title {
+            font-size: 1.3em;
+            color: #667eea;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .video-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .video-header {
+            padding: 15px;
+            background: rgba(22, 33, 62, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .video-header h4 {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .video-embed-container {
+            position: relative;
+            width: 100%;
+            background: #000;
+        }
+
+        /* YouTube aspect ratio (16:9 for regular, 9:16 for Shorts) */
+        .video-embed-container.youtube-regular {
+            padding-bottom: 56.25%;
+        }
+
+        .video-embed-container.youtube-shorts {
+            padding-bottom: 177.78%;
+            max-height: 600px;
+        }
+
+        /* TikTok aspect ratio (9:16) */
+        .video-embed-container.tiktok {
+            padding-bottom: 177.78%;
+            max-height: 600px;
+        }
+
+        /* Instagram aspect ratio */
+        .video-embed-container.instagram {
+            padding-bottom: 125%;
+            min-height: 400px;
+        }
+
+        .video-embed-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 0;
+        }
+
+        /* Instagram specific styles */
+        .instagram-media {
+            background: white !important;
+            border: 0 !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            margin: 0 !important;
+            max-width: 100% !important;
+            min-width: 100% !important;
+            padding: 0 !important;
+        }
+
+        .loading-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            color: #ccc;
+        }
+
+        .loading-placeholder .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top: 3px solid #e1306c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .platform-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .platform-youtube {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff4444;
+        }
+
+        .platform-tiktok {
+            background: rgba(0, 242, 234, 0.2);
+            color: #00f2ea;
+        }
+
+        .platform-instagram {
+            background: rgba(225, 48, 108, 0.2);
+            color: #e1306c;
+        }
+
+        .platform-amazon {
+            background: rgba(255, 153, 0, 0.2);
+            color: #ff9900;
+        }
+
+        .platform-facebook {
+            background: rgba(24, 119, 242, 0.2);
+            color: #1877f2;
+        }
+
+        .post-count {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .chart {
+                height: 300px;
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .video-embed-container.youtube-shorts,
+            .video-embed-container.tiktok {
+                max-height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Tribit KOL Performance Analysis Dashboard</h1>
+            <p>Comprehensive analysis of Key Opinion Leader campaigns across global markets</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total KOL Posts</h3>
+                <div class="value" id="totalPosts">189</div>
+            </div>
+            <div class="stat-card">
+                <h3>Active KOLs</h3>
+                <div class="value" id="totalKOLs">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Platforms</h3>
+                <div class="value" id="totalPlatforms">5</div>
+            </div>
+            <div class="stat-card">
+                <h3>Regions</h3>
+                <div class="value" id="totalRegions">3</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2>Platform Distribution Analysis</h2>
+            <div id="platformChart" class="chart"></div>
+        </div>
+
+        <div class="chart-container">
+            <h2>Regional Performance Overview</h2>
+            <div id="regionChart" class="chart"></div>
+        </div>
+
+        <div class="chart-container">
+            <h2>Top 20 Most Active KOLs</h2>
+            <div id="kolActivityChart" class="chart"></div>
+        </div>
+
+        <div class="chart-container">
+            <h2>Platform Distribution by Region</h2>
+            <div id="platformRegionChart" class="chart"></div>
+        </div>
+
+        <div class="insights-section">
+            <h2>Key Insights & Recommendations</h2>
+            <div class="insight-item">
+                <strong>YouTube Dominance:</strong> YouTube accounts for 63.5% of all KOL posts, making it the primary platform for Tribit's influencer marketing. Recommend maintaining strong YouTube partnerships while exploring growth opportunities on other platforms.
+            </div>
+            <div class="insight-item">
+                <strong>Regional Distribution:</strong> India leads with 47% of KOL activity, followed by US (24%) and Europe (29%). Consider balancing regional efforts to ensure global brand presence.
+            </div>
+            <div class="insight-item">
+                <strong>Multi-Post KOLs:</strong> Several KOLs like WhySoTechie, I-AleX, and Rickyrodger have created multiple posts, showing strong brand advocacy. Develop long-term partnerships with these high-performing creators.
+            </div>
+            <div class="insight-item">
+                <strong>Platform Diversification:</strong> Instagram and TikTok are underutilized compared to YouTube. Develop platform-specific content strategies to increase engagement on these high-growth platforms.
+            </div>
+            <div class="insight-item">
+                <strong>Cross-Platform Strategy:</strong> Some KOLs like Unbox Therapy are active across multiple platforms. Leverage these multi-platform influencers for integrated campaigns.
+            </div>
+        </div>
+
+        <div class="video-section">
+            <h2>Top Performing KOL Videos by Region</h2>
+            <div id="topKolVideos"></div>
+        </div>
+    </div>
+
+    <script>
+        // KOL Data
+        const kolData = [
+            {no: 1, channel: "TikTok", kol: "keepingupwiththekilics", url: "https://www.tiktok.com/@keepingupwiththekilics/video/7335173112780180768", region: "Europe"},
+            {no: 2, channel: "TikTok", kol: "keepingupwiththekilics", url: "https://www.tiktok.com/@keepingupwiththekilics/video/7334730444564352289", region: "Europe"},
+            {no: 3, channel: "Youtube", kol: "TechNuov", url: "https://www.youtube.com/shorts/7OR6zFH1pdI", region: "Europe"},
+            {no: 4, channel: "Youtube", kol: "CSS", url: "https://www.youtube.com/watch?v=2WnQnTxIraI", region: "Europe"},
+            {no: 5, channel: "Youtube", kol: "GADGET CRUNCH", url: "https://www.youtube.com/watch?v=B2jDmstYDWk", region: "Europe"},
+            {no: 6, channel: "Youtube", kol: "Mister Quindi", url: "https://www.youtube.com/watch?v=Aqyml-stfrw", region: "Europe"},
+            {no: 7, channel: "Youtube", kol: "Tech Room UK", url: "https://www.youtube.com/watch?v=9H4vjdoqGjc", region: "Europe"},
+            {no: 8, channel: "Youtube", kol: "Jx - Unboxing & High-Tech", url: "https://www.youtube.com/watch?v=1r4Srd-Ksuk&t=1s", region: "Europe"},
+            {no: 9, channel: "Youtube", kol: "I-AleX", url: "https://www.youtube.com/watch?v=gX41J8tiEq8", region: "Europe"},
+            {no: 10, channel: "Youtube", kol: "Giuseppe Gravante - Tech", url: "https://www.youtube.com/watch?v=29akASqcJHA", region: "Europe"},
+            {no: 11, channel: "Youtube", kol: "Moschuss", url: "https://www.youtube.com/watch?v=_1GcU_-5fkY", region: "Europe"},
+            {no: 12, channel: "Youtube", kol: "XTOM CICOS - Tech", url: "https://www.youtube.com/watch?v=67GySjz9RPU&t=71s", region: "Europe"},
+            {no: 13, channel: "TikTok", kol: "braindegeek", url: "https://www.tiktok.com/@braindegeek/video/7383316816786984225", region: "Europe"},
+            {no: 14, channel: "Youtube", kol: "I-AleX", url: "https://www.youtube.com/watch?v=bTj5_MyELwQ&t=323s", region: "Europe"},
+            {no: 15, channel: "Youtube", kol: "AudioTechniker", url: "https://www.youtube.com/watch?v=yOAnHd6t_K4", region: "Europe"},
+            {no: 16, channel: "Youtube", kol: "Chigz Tech Reviews", url: "https://www.youtube.com/watch?v=Dwadx3Andi8", region: "Europe"},
+            {no: 17, channel: "Youtube", kol: "Tech Geek", url: "https://www.youtube.com/watch?v=4-LBZ6_JkVo", region: "Europe"},
+            {no: 18, channel: "Youtube", kol: "Mr.UnboxTour", url: "https://www.youtube.com/watch?v=s1wiihJ-C6k", region: "Europe"},
+            {no: 19, channel: "Youtube", kol: "Tech Room UK", url: "https://www.youtube.com/watch?v=VnNzMxlDaDA", region: "Europe"},
+            {no: 20, channel: "Youtube", kol: "GADGET CRUNCH", url: "https://www.youtube.com/watch?v=e2hKaHSBkt8&t=174s", region: "Europe"},
+            {no: 21, channel: "Youtube", kol: "Tech Nuovo", url: "https://www.youtube.com/shorts/DKI_uKrHFg4", region: "Europe"},
+            {no: 22, channel: "Youtube", kol: "Tech Nuovo", url: "https://www.youtube.com/watch?v=9G2gBwTTZqI", region: "Europe"},
+            {no: 23, channel: "Youtube", kol: "I-AleX", url: "https://www.youtube.com/shorts/doXZE4FIhZU?feature=share", region: "Europe"},
+            {no: 24, channel: "TikTok", kol: "Braindegeek", url: "https://www.tiktok.com/@braindegeek/video/7413445818516098337", region: "Europe"},
+            {no: 25, channel: "Youtube", kol: "Braindegeek", url: "https://www.youtube.com/shorts/8X2vzg_I8J8", region: "Europe"},
+            {no: 26, channel: "TikTok", kol: "annaa_cologne", url: "https://vm.tiktok.com/ZNewaSoyN/", region: "Europe"},
+            {no: 27, channel: "Youtube", kol: "DirtyLama", url: "https://www.youtube.com/watch?v=YCXAGDdc_bE", region: "Europe"},
+            {no: 28, channel: "Youtube", kol: "Tech Room UK", url: "https://www.youtube.com/watch?v=aw-T1845RGA", region: "Europe"},
+            {no: 29, channel: "Youtube", kol: "I-Alex", url: "https://www.youtube.com/watch?v=JBG2bNzVNlU", region: "Europe"},
+            {no: 30, channel: "Youtube", kol: "DHRME", url: "https://www.youtube.com/watch?v=CZVmBcaGX8Q", region: "Europe"},
+            {no: 31, channel: "Youtube", kol: "Tech Nuovo", url: "https://www.youtube.com/shorts/tRjM__zX5w8", region: "Europe"},
+            {no: 32, channel: "Youtube", kol: "Chigz Tech Reviews", url: "https://www.youtube.com/watch?v=MNHb4hNQPkI", region: "Europe"},
+            {no: 33, channel: "Youtube", kol: "Chigz Tech Reviews", url: "https://www.youtube.com/shorts/UhJN4hGXlhw", region: "Europe"},
+            {no: 34, channel: "Youtube", kol: "Speakershocker Hi-Fi Mehr als nur Technik", url: "https://www.youtube.com/watch?v=svzDCq7dBCw", region: "Europe"},
+            {no: 35, channel: "Youtube", kol: "Smart Home Sounds", url: "https://www.youtube.com/watch?v=DbQbE2sPxSY", region: "Europe"},
+            {no: 36, channel: "Youtube", kol: "Stu's Reviews", url: "https://www.youtube.com/watch?v=b0MCqAWkhnY", region: "Europe"},
+            {no: 37, channel: "Youtube", kol: "DIrtylama", url: "https://youtu.be/WAvZGNzVjU8?si=WmUbLcgbZkXPupXz", region: "Europe"},
+            {no: 38, channel: "Youtube", kol: "DIrtylama", url: "https://www.youtube.com/watch?v=Ftgp2eOEbrw", region: "Europe"},
+            {no: 39, channel: "Youtube", kol: "Mr LazyTech", url: "https://www.youtube.com/watch?v=6uJ1Stn-r6Q&t=1s", region: "India"},
+            {no: 40, channel: "Youtube", kol: "AB Tech Vlog", url: "https://www.youtube.com/watch?v=VN9IHp8qdiw", region: "India"},
+            {no: 41, channel: "Youtube", kol: "Rickyrodger", url: "https://www.youtube.com/watch?v=t6K185yFccQ", region: "India"},
+            {no: 42, channel: "Youtube", kol: "Tech Therapy", url: "https://www.youtube.com/watch?v=z12_ug0lU5k", region: "India"},
+            {no: 43, channel: "Youtube", kol: "Saurav Anuraj", url: "https://www.youtube.com/watch?v=-1xKbtYZX9M", region: "India"},
+            {no: 44, channel: "Instagram", kol: "gizmogyn", url: "https://www.instagram.com/reel/C2fFAYxvUuD/?igsh=MXd5ZXNheWZkY2JnNA%3D%3D", region: "India"},
+            {no: 45, channel: "Youtube", kol: "Mr Rude", url: "https://www.youtube.com/watch?v=dhJN1mOtHQs&t=129s", region: "India"},
+            {no: 46, channel: "Instagram", kol: "mrcheri", url: "https://www.instagram.com/reel/C3LBWCTxkG4/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==", region: "India"},
+            {no: 47, channel: "Instagram", kol: "technobhawesh", url: "https://www.instagram.com/reel/C3bnW2Avak8/?igsh=dnU3Z3Bwa2FudDBi", region: "India"},
+            {no: 48, channel: "Youtube", kol: "Techzonical", url: "https://www.youtube.com/watch?v=4NKYTkjqDbc", region: "India"},
+            {no: 49, channel: "Youtube", kol: "ETetra Gadgets", url: "https://www.youtube.com/watch?v=9T1g1XDhe5A", region: "India"},
+            {no: 50, channel: "Youtube", kol: "Techdreams", url: "https://www.youtube.com/watch?v=xP4mhnz4R9M&t=31s", region: "India"},
+            {no: 51, channel: "Youtube", kol: "TechFreak", url: "https://www.youtube.com/watch?v=Gv5mNqnUMJc", region: "India"},
+            {no: 52, channel: "Youtube", kol: "Tech Bengali", url: "https://www.youtube.com/watch?v=0M_LMzWOSis", region: "India"},
+            {no: 53, channel: "Youtube", kol: "Arjun Tech", url: "https://www.youtube.com/watch?v=TxsMpZCNPJo", region: "India"},
+            {no: 54, channel: "Youtube", kol: "WhySoTechie", url: "https://www.youtube.com/watch?v=okg1xn-FASo", region: "India"},
+            {no: 55, channel: "Instagram", kol: "AR7 TECH", url: "https://www.instagram.com/reel/DDQ_OUfSxU2/", region: "India"},
+            {no: 56, channel: "Youtube", kol: "Electrical Unboxing", url: "https://www.youtube.com/shorts/PTWNdz736AY", region: "India"},
+            {no: 57, channel: "Youtube", kol: "SteReo", url: "https://www.youtube.com/shorts/1yvDIEteE3A", region: "India"},
+            {no: 58, channel: "Instagram", kol: "SteReo", url: "https://www.instagram.com/p/C344KrLxU-l/", region: "India"},
+            {no: 59, channel: "Instagram", kol: "techbits__", url: "https://www.instagram.com/reel/C4xpze6rBlC/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==", region: "India"},
+            {no: 60, channel: "Instagram", kol: "techxstreet", url: "https://www.instagram.com/reel/C4-qntGvHW2/", region: "India"},
+            {no: 61, channel: "Instagram", kol: "ask.theashugandhi", url: "https://www.instagram.com/ask.theashugandhi/", region: "India"},
+            {no: 62, channel: "Youtube", kol: "Gupta Information Systems in Hindi", url: "https://www.youtube.com/shorts/BuZebi87qeE", region: "India"},
+            {no: 63, channel: "Youtube", kol: "Mr Rudee", url: "https://www.youtube.com/watch?v=_fZogMcJH6o&t=181s", region: "India"},
+            {no: 64, channel: "Youtube", kol: "WhySoTechie", url: "https://www.youtube.com/watch?v=oCHo7zHmP0Y", region: "India"},
+            {no: 65, channel: "Youtube", kol: "WhySoTechie", url: "https://www.youtube.com/shorts/jTVVt7SM_OE", region: "India"},
+            {no: 66, channel: "Youtube", kol: "WhySoTechie", url: "https://www.youtube.com/watch?v=-PjFO2ortDM&t=96s", region: "India"},
+            {no: 67, channel: "Youtube", kol: "WhySoTechie", url: "https://www.youtube.com/watch?v=hsjPYfPs66Y", region: "India"},
+            {no: 68, channel: "Youtube", kol: "SteReo", url: "https://www.youtube.com/shorts/aPOn2g4Hib8", region: "India"},
+            {no: 69, channel: "Youtube", kol: "SteReo", url: "https://www.youtube.com/shorts/09kmvMT3d2I", region: "India"},
+            {no: 70, channel: "Youtube", kol: "AB Tech Vlog", url: "https://www.youtube.com/watch?v=orPtHZw-Tow", region: "India"},
+            {no: 71, channel: "Instagram", kol: "technobhawesh", url: "https://www.instagram.com/reel/C592Zd9y43n/?igsh=YnN4ZnU0aDJ1cGR0", region: "India"},
+            {no: 72, channel: "Instagram", kol: "mrcheri", url: "https://www.instagram.com/reel/C6DPUu6Rfu3/?igsh=MW9nd2k1NzdhczZsNg%3D%3D", region: "India"},
+            {no: 73, channel: "Youtube", kol: "Technojoy Logy", url: "https://www.youtube.com/watch?v=JbkED8CAdtI", region: "India"},
+            {no: 74, channel: "Instagram", kol: "techxanmol", url: "https://www.instagram.com/edushop.in/reels/", region: "India"},
+            {no: 75, channel: "Youtube", kol: "Indori Explorer", url: "https://www.youtube.com/watch?v=YM1aIqKb16Y", region: "India"},
+            {no: 76, channel: "Instagram", kol: "Rickyrodger", url: "https://www.instagram.com/reel/C6Eb96py3-i/", region: "India"},
+            {no: 77, channel: "Youtube", kol: "Rickyrodger", url: "https://www.youtube.com/watch?v=XAstmObjT8o&t=21s", region: "India"},
+            {no: 78, channel: "Youtube", kol: "Rickyrodger", url: "https://www.youtube.com/shorts/i2ut0Ny1hl4", region: "India"},
+            {no: 79, channel: "Youtube", kol: "Meta Tech Reviews", url: "https://www.youtube.com/watch?v=spJbpQXbmKc&t=22s", region: "India"},
+            {no: 80, channel: "Instagram", kol: "techbits__", url: "https://www.instagram.com/reel/C63g_kixp79/", region: "India"},
+            {no: 81, channel: "Youtube", kol: "Tech Dreams", url: "https://www.youtube.com/watch?v=PtivzZoAnFU&t=255s", region: "India"},
+            {no: 82, channel: "Instagram", kol: "ask.theashugandhi", url: "https://www.instagram.com/reel/C7bine1Sp9W/", region: "India"},
+            {no: 83, channel: "Instagram", kol: "tec_viral", url: "https://www.instagram.com/reel/C7mDwwxyCEu/", region: "India"},
+            {no: 84, channel: "Youtube", kol: "True Techy", url: "https://www.youtube.com/watch?v=AK0yraaLWrw&t=189s", region: "India"},
+            {no: 85, channel: "Youtube", kol: "TechReflex", url: "https://www.youtube.com/watch?v=vrmqUDhu0zg", region: "India"},
+            {no: 86, channel: "Instagram", kol: "ankit.joshi._", url: "https://www.instagram.com/reel/C8D6e0vhncJ/", region: "India"},
+            {no: 87, channel: "Instagram", kol: "bobby_ustd", url: "https://www.instagram.com/accounts/login/?next=https%3A%2F%2Fwww.instagram.com%2Fbobby_ustad%2Freel%2FC8Rpk-aSIbm%2F&is_from_rle", region: "India"},
+            {no: 88, channel: "Youtube", kol: "TECHMESH", url: "https://www.youtube.com/watch?v=0AEoRn7LuWA", region: "India"},
+            {no: 89, channel: "Youtube", kol: "Adithya Tech தமிழ்", url: "https://www.youtube.com/watch?v=HutgI3mtJj0", region: "India"},
+            {no: 90, channel: "Youtube", kol: "Nitin Tns Green", url: "https://www.youtube.com/watch?v=REUcxQ5Fb4U", region: "India"},
+            {no: 91, channel: "Youtube", kol: "Mr Rudee", url: "https://www.youtube.com/watch?v=4OXiQ8uekDc", region: "India"},
+            {no: 92, channel: "Youtube", kol: "SteReo", url: "https://www.youtube.com/shorts/I43p8uUxVfQ", region: "India"},
+            {no: 93, channel: "Instagram", kol: "technobhawesh", url: "https://www.instagram.com/reel/C8lRBylidoT/?igsh=NnFrYnpkMHBwazBl", region: "India"},
+            {no: 94, channel: "Instagram", kol: "techbits__", url: "https://www.instagram.com/reel/C84NSFqhxpo/?igsh=MTE5Z2U3cXM4eno5ZQ==", region: "India"},
+            {no: 95, channel: "Youtube", kol: "Meta Tech Review", url: "https://www.youtube.com/watch?v=qr-vVB6kMMk", region: "India"},
+            {no: 96, channel: "Youtube", kol: "True Techy", url: "https://www.youtube.com/watch?v=sNaLyJdkDbc&t=239s", region: "India"},
+            {no: 97, channel: "Youtube", kol: "whysotechie", url: "https://www.youtube.com/watch?v=7kKE9EpSv3A", region: "India"},
+            {no: 98, channel: "Instagram", kol: "mrcheri", url: "https://www.instagram.com/mrcheri/", region: "India"},
+            {no: 99, channel: "Instagram", kol: "ask.theashugandhi", url: "https://www.instagram.com/ask.theashugandhi/", region: "India"},
+            {no: 100, channel: "Instagram", kol: "techyoulogy", url: "https://www.instagram.com/techyoulogy?igsh=MXUxODdoOWxscXRvYQ==", region: "India"},
+            {no: 101, channel: "Youtube", kol: "tech therapy", url: "https://www.youtube.com/watch?v=4aoSUNLAENU", region: "India"},
+            {no: 102, channel: "Youtube", kol: "Techum", url: "https://www.youtube.com/watch?v=zQ-91lmmGg4", region: "India"},
+            {no: 103, channel: "Youtube", kol: "Techreflex", url: "https://www.youtube.com/watch?v=9OEpud18Vps&t=41s", region: "India"},
+            {no: 104, channel: "Instagram", kol: "technicoHimanshu", url: "https://www.instagram.com/digi.bytess/", region: "India"},
+            {no: 105, channel: "Instagram", kol: "digi bytess", url: "https://www.instagram.com/digi.bytess/", region: "India"},
+            {no: 106, channel: "Instagram", kol: "pritamtechmind", url: "https://www.instagram.com/reel/C_nc8Jwv22K/?igsh=cTJ1bDA4aWFld2Zh", region: "India"},
+            {no: 107, channel: "Instagram", kol: "gadgetbhaii", url: "https://www.instagram.com/reel/DCE3sRtSjZ6/?igsh=NHo0MTE3ZzFnNGVu", region: "India"},
+            {no: 108, channel: "Youtube", kol: "iGadz Unique", url: "https://www.youtube.com/watch?v=peqbXA1GP5c", region: "India"},
+            {no: 109, channel: "Youtube", kol: "Smart Supporter", url: "https://www.youtube.com/watch?v=HjN08m2fBKA", region: "India"},
+            {no: 110, channel: "Instagram", kol: "True Techy", url: "https://www.instagram.com/p/C_BHo0NzbWo/", region: "India"},
+            {no: 111, channel: "Instagram", kol: "bhavna_pathania", url: "https://www.instagram.com/reel/C_Nku1JPLYE/?igsh=ZjBvdDR5Nzc3dmE4", region: "India"},
+            {no: 112, channel: "Instagram", kol: "tec_viral", url: "https://www.instagram.com/reel/C_dWDHGO5fM/?igsh=MXFkbzhsM29jbHV5MQ==", region: "India"},
+            {no: 113, channel: "Instagram", kol: "Techbit", url: "https://www.instagram.com/reel/C_qBbbNh5Hz/?igsh=MWZxemlvaGNleWJxMw==", region: "India"},
+            {no: 114, channel: "Instagram", kol: "TechnoBhawesh", url: "https://www.instagram.com/reel/C_zLwgxP2Gp/?igsh=MTR6d2VsZWs2dHBzNQ==", region: "India"},
+            {no: 115, channel: "Youtube", kol: "TechnoBhawesh", url: "https://youtube.com/shorts/mn1T6zaxL1Y?feature=share", region: "India"},
+            {no: 116, channel: "Instagram", kol: "ask.theashugandhi", url: "https://www.instagram.com/reel/DABEMOmz8Lq/?igsh=NzdhOTVrbmR6bGhl", region: "India"},
+            {no: 117, channel: "Instagram", kol: "tipsbyayush", url: "https://www.instagram.com/reel/DAQ15G6SoIG/?igsh=MThqMm05ZGx6c3MxNw==", region: "India"},
+            {no: 118, channel: "Instagram", kol: "chad_Ashna", url: "https://www.instagram.com/reel/DAKyaFoppP_/?igsh=NTc4MTIwNjQ2YQ==", region: "India"},
+            {no: 119, channel: "Instagram", kol: "gyan.monkey", url: "https://www.instagram.com/gyan.monkey?igsh=MTZwbTFwaDljeTNlYw==", region: "India"},
+            {no: 120, channel: "Youtube", kol: "Jstech", url: "https://www.youtube.com/watch?v=0mC22Bxte6U", region: "India"},
+            {no: 121, channel: "Instagram", kol: "ankit_ankk", url: "https://www.instagram.com/reel/DBYlZeWSGzb/?igsh=d2kwYjgwYW13dzE0", region: "India"},
+            {no: 122, channel: "Youtube", kol: "Nexgen Harley", url: "https://www.youtube.com/watch?v=6PBQhJ-92Uk", region: "India"},
+            {no: 123, channel: "Instagram", kol: "himanshu", url: "https://www.instagram.com/reel/DC6iWlxSje8/?igsh=ZzZ3cGcwZTV5bDhv", region: "India"},
+            {no: 124, channel: "Youtube", kol: "Rickyrodger", url: "https://www.youtube.com/shorts/6uk7eUx6o8I", region: "India"},
+            {no: 125, channel: "Instagram", kol: "Rickyrodger", url: "https://www.instagram.com/reel/DBMBsjiy65U/?igsh=MXFzdXJyazFqa2Q5dg==", region: "India"},
+            {no: 126, channel: "Youtube", kol: "Techmesh", url: "https://www.youtube.com/watch?v=etBUVnYiPnk", region: "India"},
+            {no: 127, channel: "Youtube", kol: "TheHopelessGeek", url: "https://www.youtube.com/watch?v=i1lr7wzvMgE", region: "India"},
+            {no: 128, channel: "Youtube", kol: "Techreflex", url: "https://www.youtube.com/watch?v=UehOzq6SZos", region: "India"},
+            {no: 129, channel: "Youtube", kol: "Tech Bag Tamil", url: "https://www.youtube.com/watch?v=TrsI1PfRZwA", region: "India"},
+            {no: 130, channel: "Youtube", kol: "mr rudee", url: "https://www.youtube.com/watch?v=TN7Sjhz_XCM", region: "India"},
+            {no: 131, channel: "Youtube", kol: "iGadz Unique", url: "https://www.youtube.com/watch?v=Gz_34v3N5eE", region: "India"},
+            {no: 132, channel: "Instagram", kol: "himanshu", url: "https://www.instagram.com/reel/DC_t66mylrd/?igsh=Yzc0anA0a2tsbmU4", region: "India"},
+            {no: 133, channel: "Instagram", kol: "ask.theashugandhi", url: "https://www.instagram.com/reel/DBrAB_aIsm3/?igsh=MWV4azU1NGI0bGNlcw==", region: "India"},
+            {no: 134, channel: "Instagram", kol: "gadgetbhaii", url: "https://www.instagram.com/reel/DEPk4SGy6KY/?igsh=MTQ3emk1c2Zwa3Bq", region: "India"},
+            {no: 135, channel: "Youtube", kol: "Purecast56", url: "https://www.youtube.com/watch?v=_wmBTJ8im3k", region: "India"},
+            {no: 136, channel: "Youtube", kol: "Purecast57", url: "https://www.youtube.com/watch?v=6judpul8ksE", region: "India"},
+            {no: 137, channel: "Youtube", kol: "whysotechie", url: "https://www.youtube.com/watch?v=FO7dHFHYlrs", region: "India"},
+            {no: 138, channel: "Youtube", kol: "whysotechie", url: "https://www.youtube.com/shorts/kMEXXKP9xWk", region: "India"},
+            {no: 139, channel: "Youtube", kol: "whysotechie", url: "https://www.youtube.com/watch?v=EEeomXmrfkQ", region: "India"},
+            {no: 140, channel: "Youtube", kol: "TrueTechy", url: "https://www.youtube.com/watch?v=09zKXmIDMuc", region: "India"},
+            {no: 141, channel: "Youtube", kol: "Halka Tech", url: "https://www.youtube.com/watch?v=_ZEX3hG1whM", region: "India"},
+            {no: 142, channel: "Youtube", kol: "Halka Tech", url: "https://youtube.com/shorts/DuO-lk7YSQ8?si=Gz5MKspT3WP6knLY", region: "India"},
+            {no: 143, channel: "Instagram", kol: "Halka Tech", url: "https://www.instagram.com/reel/DD6eGKtvBTw/?igsh=MWlkZHJ0dGJ6cTQ5bg==", region: "India"},
+            {no: 144, channel: "Youtube", kol: "Stereo", url: "https://www.youtube.com/watch?v=CNMwVGE7880", region: "India"},
+            {no: 145, channel: "Youtube", kol: "Stereo", url: "https://www.youtube.com/watch?v=wHEMo7_tsy8", region: "India"},
+            {no: 146, channel: "TikTok", kol: "tylercheri", url: "https://www.tiktok.com/@tylercheri/video/7333373296693595438", region: "US"},
+            {no: 147, channel: "Youtube", kol: "michael_stout79", url: "https://www.youtube.com/watch?v=3IRpHMHK2SE&t=379s", region: "US"},
+            {no: 148, channel: "Youtube", kol: "Wanna Buy It", url: "https://www.youtube.com/watch?v=N5xwyWqqLmg&t=269s", region: "US"},
+            {no: 149, channel: "Youtube", kol: "Brannon No d", url: "https://www.youtube.com/watch?v=_NSo_YBC0AU&t=214s", region: "US"},
+            {no: 150, channel: "Youtube", kol: "CEONTHEMAKING", url: "https://www.youtube.com/watch?v=3B7bvTtPDFE", region: "US"},
+            {no: 151, channel: "Youtube", kol: "Eric Hernandez", url: "https://www.youtube.com/watch?v=N_agsg9ZmJI", region: "US"},
+            {no: 152, channel: "Youtube", kol: "Tech With RR", url: "https://www.youtube.com/watch?v=bXM423Uc5NI&t=1s", region: "US"},
+            {no: 153, channel: "Youtube", kol: "TK Bay", url: "https://www.youtube.com/watch?v=Ys-9rPJpJzU&t=1s", region: "US"},
+            {no: 154, channel: "Youtube", kol: "EnforcerMan", url: "https://www.youtube.com/watch?v=vxRl4yTY-jQ&t=612s", region: "US"},
+            {no: 155, channel: "TikTok", kol: "the.atn", url: "https://www.tiktok.com/@the.atn/video/7425803047441337642?_t=8qd2L3N5GZz&_r=1", region: "US"},
+            {no: 156, channel: "Youtube", kol: "Cut2Cut Reviews", url: "https://www.youtube.com/watch?v=QN35oyEVQXk&t=40s", region: "US"},
+            {no: 157, channel: "Youtube", kol: "Youtube", url: "https://www.youtube.com/watch?v=chsuteQKWMc&t=13s", region: "US"},
+            {no: 158, channel: "Youtube", kol: "Epic Review Hub", url: "https://www.youtube.com/watch?v=TFtKPo_ZUtQ", region: "US"},
+            {no: 159, channel: "Youtube", kol: "Brannon No d", url: "https://www.youtube.com/watch?v=_Gks93gudp0&t=14s", region: "US"},
+            {no: 160, channel: "Youtube", kol: "Eric Hernandez", url: "https://www.youtube.com/watch?v=_Gks93gudp0&t=14s", region: "US"},
+            {no: 161, channel: "Youtube", kol: "Winter's Reviews", url: "https://www.youtube.com/watch?v=gbQAhvQvA7s&t=14s", region: "US"},
+            {no: 162, channel: "Amazon", kol: "Mohsen Canada", url: "https://www.amazon.com/live/video/08030f9e97134ed499215574cbfbee2e?ref_=asvh_vdp", region: "US"},
+            {no: 163, channel: "Youtube", kol: "TK Bay", url: "https://www.youtube.com/watch?v=vj5h-Smhsbc", region: "US"},
+            {no: 164, channel: "Youtube", kol: "The Average Tech Guy", url: "https://www.youtube.com/watch?v=4d72i3aj1D0", region: "US"},
+            {no: 165, channel: "Youtube", kol: "Consumer Tech Review", url: "https://www.youtube.com/watch?v=AAx-0uy2FYQ", region: "US"},
+            {no: 166, channel: "Youtube", kol: "Danny Pops", url: "https://www.youtube.com/watch?v=mDHNMQBj0nE&t=18s", region: "US"},
+            {no: 167, channel: "Youtube", kol: "Digital Slang", url: "https://www.youtube.com/watch?v=TY7dGyZ6VhA", region: "US"},
+            {no: 168, channel: "TikTok", kol: "larad_official", url: "https://www.tiktok.com/@larad_official/video/7407070918532451615", region: "US"},
+            {no: 169, channel: "Youtube", kol: "michael_stout79", url: "https://www.youtube.com/watch?v=4xPexsuk0hU&t=530s", region: "US"},
+            {no: 170, channel: "TikTok", kol: "jackiekxhl", url: "https://www.tiktok.com/@jackiekxhl/video/7412814055410355487", region: "US"},
+            {no: 171, channel: "Amazon", kol: "TheChrisReview", url: "https://www.amazon.com/live/video/05c0798085eb45f2aaa286e61c7e1f19?ref_=asvh_vdp", region: "US"},
+            {no: 172, channel: "Youtube", kol: "TheChrisReview", url: "https://youtu.be/-ZM75wBlP5s", region: "US"},
+            {no: 173, channel: "Youtube", kol: "GH Tech Review", url: "https://www.youtube.com/shorts/T7ckGXiM1T0", region: "US"},
+            {no: 174, channel: "TikTok", kol: "kerraezgi", url: "https://www.tiktok.com/@kerraezgi/video/7434575065720556843?_r=1&_t=8rD4cIt2rB0", region: "US"},
+            {no: 175, channel: "Instagram", kol: "kerraezgi", url: "https://www.instagram.com/reel/DCE63ArOPbF/", region: "US"},
+            {no: 176, channel: "Youtube", kol: "Eli Euley", url: "https://www.youtube.com/watch?v=j0uSs4i9FOg", region: "US"},
+            {no: 177, channel: "Amazon", kol: "thechrisreview", url: "https://www.amazon.com/live/video/04fac320ffe949c6b4732f6438f5aa1a?ref_=asvh_vdp", region: "US"},
+            {no: 178, channel: "Youtube", kol: "thechrisreview", url: "https://youtu.be/RANWSqfbpGA", region: "US"},
+            {no: 179, channel: "Youtube", kol: "Unbox Therapy", url: "https://www.youtube.com/shorts/gDOjHj1RZeM", region: "US"},
+            {no: 180, channel: "TikTok", kol: "Unbox Therapy", url: "https://www.tiktok.com/@unboxtherapyofficial/video/7430137577279212805?lang=en", region: "US"},
+            {no: 181, channel: "Instagram", kol: "Unbox Therapy", url: "instagram.com/unboxtherapy", region: "US"},
+            {no: 182, channel: "Facebook", kol: "Unbox Therapy", url: "facebook.com/unboxtherapy", region: "US"},
+            {no: 183, channel: "Youtube", kol: "TK BAY", url: "https://www.youtube.com/watch?v=gJi5evL_Oyw", region: "US"},
+            {no: 184, channel: "Youtube", kol: "Happy Ajula", url: "https://www.youtube.com/watch?v=_dvZrLaChGQ", region: "US"},
+            {no: 185, channel: "Youtube", kol: "HansTechTalk", url: "https://www.youtube.com/watch?v=Y2Br_tCUPKg", region: "US"},
+            {no: 186, channel: "Youtube", kol: "Dannypops", url: "https://www.youtube.com/watch?v=IwlqWQzAtrE", region: "US"},
+            {no: 187, channel: "Youtube", kol: "Eric Hernandez", url: "https://youtu.be/3uZcv68uNH8", region: "US"},
+            {no: 188, channel: "Youtube", kol: "Brannon No d", url: "https://www.youtube.com/watch?app=desktop&v=yDZ9GrNsf-s&list=LL&index=1", region: "US"},
+            {no: 189, channel: "Youtube", kol: "FishBee Product Reviews", url: "https://www.youtube.com/watch?v=hGau_4adEIU", region: "US"}
+        ];
+
+        // Calculate unique KOLs
+        const uniqueKOLs = [...new Set(kolData.map(item => item.kol.toLowerCase()))].length;
+        document.getElementById('totalKOLs').textContent = uniqueKOLs;
+
+        // Initialize charts
+        initializeCharts();
+
+        // Create video cards
+        createVideoCards();
+
+        // Initialize Instagram embeds after DOM is ready
+        setTimeout(loadInstagramEmbeds, 1000);
+
+        function initializeCharts() {
+            // Platform Distribution Chart
+            const platformCounts = {};
+            kolData.forEach(item => {
+                platformCounts[item.channel] = (platformCounts[item.channel] || 0) + 1;
+            });
+
+            const platformChart = echarts.init(document.getElementById('platformChart'));
+            platformChart.setOption({
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    right: 10,
+                    top: 'center',
+                    textStyle: { color: '#fff' }
+                },
+                series: [{
+                    name: 'Platform',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#0a0a0a',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        position: 'center',
+                        formatter: function(params) {
+                            return params.name + '\n' + params.value + ' posts';
+                        },
+                        fontSize: 16,
+                        fontWeight: 'bold'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 20,
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: [
+                        { value: platformCounts['Youtube'] || 0, name: 'YouTube', itemStyle: { color: '#ff0000' } },
+                        { value: platformCounts['Instagram'] || 0, name: 'Instagram', itemStyle: { color: '#e1306c' } },
+                        { value: platformCounts['TikTok'] || 0, name: 'TikTok', itemStyle: { color: '#00f2ea' } },
+                        { value: platformCounts['Amazon'] || 0, name: 'Amazon', itemStyle: { color: '#ff9900' } },
+                        { value: platformCounts['Facebook'] || 0, name: 'Facebook', itemStyle: { color: '#1877f2' } }
+                    ]
+                }]
+            });
+
+            // Regional Distribution Chart
+            const regionCounts = {};
+            kolData.forEach(item => {
+                regionCounts[item.region] = (regionCounts[item.region] || 0) + 1;
+            });
+
+            const regionChart = echarts.init(document.getElementById('regionChart'));
+            regionChart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    top: '10%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: Object.keys(regionCounts),
+                    axisLabel: { color: '#fff' },
+                    axisLine: { lineStyle: { color: '#8892b0' } }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: { color: '#fff' },
+                    axisLine: { lineStyle: { color: '#8892b0' } },
+                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }
+                },
+                series: [{
+                    name: 'Posts',
+                    type: 'bar',
+                    data: Object.values(regionCounts),
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: '#667eea' },
+                            { offset: 1, color: '#764ba2' }
+                        ]),
+                        borderRadius: [8, 8, 0, 0]
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#764ba2' },
+                                { offset: 1, color: '#667eea' }
+                            ])
+                        }
+                    }
+                }]
+            });
+
+            // Top KOL Activity Chart
+            const kolActivity = {};
+            kolData.forEach(item => {
+                const kolName = item.kol.toLowerCase();
+                kolActivity[kolName] = (kolActivity[kolName] || 0) + 1;
+            });
+
+            const sortedKOLs = Object.entries(kolActivity)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 20);
+
+            const kolActivityChart = echarts.init(document.getElementById('kolActivityChart'));
+            kolActivityChart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                grid: {
+                    left: '20%',
+                    right: '4%',
+                    bottom: '3%',
+                    top: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'value',
+                    axisLabel: { color: '#fff' },
+                    axisLine: { lineStyle: { color: '#8892b0' } },
+                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: sortedKOLs.map(item => item[0]),
+                    axisLabel: { 
+                        color: '#fff',
+                        fontSize: 10,
+                        formatter: function(value) {
+                            return value.length > 20 ? value.substr(0, 20) + '...' : value;
+                        }
+                    },
+                    axisLine: { lineStyle: { color: '#8892b0' } }
+                },
+                series: [{
+                    name: 'Posts',
+                    type: 'bar',
+                    data: sortedKOLs.map(item => item[1]),
+                    itemStyle: {
+                        color: function(params) {
+                            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#667eea', '#764ba2'];
+                            return colors[params.dataIndex % colors.length];
+                        },
+                        borderRadius: [0, 4, 4, 0]
+                    }
+                }]
+            });
+
+            // Platform by Region Chart
+            const platformRegionData = {};
+            kolData.forEach(item => {
+                if (!platformRegionData[item.region]) {
+                    platformRegionData[item.region] = {};
+                }
+                platformRegionData[item.region][item.channel] = (platformRegionData[item.region][item.channel] || 0) + 1;
+            });
+
+            const regions = Object.keys(platformRegionData);
+            const platforms = ['Youtube', 'Instagram', 'TikTok', 'Amazon', 'Facebook'];
+            const seriesData = platforms.map(platform => ({
+                name: platform,
+                type: 'bar',
+                stack: 'total',
+                data: regions.map(region => platformRegionData[region][platform] || 0),
+                itemStyle: {
+                    color: {
+                        'Youtube': '#ff0000',
+                        'Instagram': '#e1306c',
+                        'TikTok': '#00f2ea',
+                        'Amazon': '#ff9900',
+                        'Facebook': '#1877f2'
+                    }[platform]
+                }
+            }));
+
+            const platformRegionChart = echarts.init(document.getElementById('platformRegionChart'));
+            platformRegionChart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    data: platforms,
+                    textStyle: { color: '#fff' },
+                    top: 'top'
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    top: '15%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: regions,
+                    axisLabel: { color: '#fff' },
+                    axisLine: { lineStyle: { color: '#8892b0' } }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: { color: '#fff' },
+                    axisLine: { lineStyle: { color: '#8892b0' } },
+                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }
+                },
+                series: seriesData
+            });
+
+            // Window resize handling
+            window.addEventListener('resize', function() {
+                platformChart.resize();
+                regionChart.resize();
+                kolActivityChart.resize();
+                platformRegionChart.resize();
+            });
+        }
+
+        function createVideoCards() {
+            const regions = ['Europe', 'India', 'US'];
+            let videosHTML = '';
+
+            regions.forEach(region => {
+                const regionKOLs = kolData.filter(item => item.region === region);
+                const kolCounts = {};
+                
+                regionKOLs.forEach(item => {
+                    if (!kolCounts[item.kol]) {
+                        kolCounts[item.kol] = {
+                            name: item.kol,
+                            count: 0,
+                            platforms: new Set(),
+                            posts: []
+                        };
+                    }
+                    kolCounts[item.kol].count++;
+                    kolCounts[item.kol].platforms.add(item.channel);
+                    kolCounts[item.kol].posts.push({
+                        platform: item.channel,
+                        url: item.url
+                    });
+                });
+
+                const topKOLs = Object.values(kolCounts)
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 6); // Show top 6 KOLs per region
+
+                videosHTML += `<h3 class="region-title">${region} - Top KOL Videos</h3>`;
+                videosHTML += '<div class="video-grid">';
+
+                topKOLs.forEach(kol => {
+                    // Get the most recent post
+                    const latestPost = kol.posts[0];
+                    const videoEmbed = createVideoEmbed(latestPost.url, latestPost.platform);
+                    
+                    videosHTML += `
+                        <div class="video-card">
+                            <div class="video-header">
+                                <h4>${kol.name}</h4>
+                                <div class="video-meta">
+                                    <span class="platform-badge platform-${latestPost.platform.toLowerCase()}">${latestPost.platform}</span>
+                                    <span class="post-count">${kol.count} posts</span>
+                                </div>
+                            </div>
+                            ${videoEmbed}
+                        </div>
+                    `;
+                });
+
+                videosHTML += '</div>';
+            });
+
+            document.getElementById('topKolVideos').innerHTML = videosHTML;
+        }
+
+        function createVideoEmbed(url, platform) {
+            if (platform === 'Youtube') {
+                const videoId = extractYouTubeId(url);
+                if (videoId) {
+                    const isShorts = url.includes('/shorts/');
+                    const aspectClass = isShorts ? 'youtube-shorts' : 'youtube-regular';
+                    return `
+                        <div class="video-embed-container ${aspectClass}">
+                            <iframe src="https://www.youtube.com/embed/${videoId}" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    `;
+                }
+            } else if (platform === 'TikTok') {
+                const videoId = extractTikTokId(url);
+                if (videoId) {
+                    return `
+                        <div class="video-embed-container tiktok">
+                            <iframe src="https://www.tiktok.com/embed/v2/${videoId}" 
+                                frameborder="0" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    `;
+                }
+            } else if (platform === 'Instagram') {
+                return `
+                    <div class="video-embed-container instagram">
+                        <div class="loading-placeholder">
+                            <div class="spinner"></div>
+                            <div>Loading Instagram Post...</div>
+                        </div>
+                        <div class="instagram-embed-wrapper" style="display: none;">
+                            <blockquote class="instagram-media" 
+                                data-instgrm-captioned 
+                                data-instgrm-permalink="${url}?utm_source=ig_embed&utm_campaign=loading" 
+                                data-instgrm-version="14">
+                            </blockquote>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // For Amazon, Facebook, or unsupported platforms
+            return `
+                <div class="video-embed-container" style="padding: 40px; text-align: center; background: rgba(0,0,0,0.3);">
+                    <p style="color: #888;">Video preview not available</p>
+                    <a href="${url}" target="_blank" style="color: #667eea; text-decoration: none;">View on ${platform} →</a>
+                </div>
+            `;
+        }
+
+        function extractYouTubeId(url) {
+            const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+            return match ? match[1] : null;
+        }
+
+        function extractTikTokId(url) {
+            const match = url.match(/video\/(\d+)/);
+            return match ? match[1] : null;
+        }
+
+        function loadInstagramEmbeds() {
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://www.instagram.com/embed.js';
+            document.body.appendChild(script);
+            
+            script.onload = () => {
+                if (window.instgrm) {
+                    window.instgrm.Embeds.process();
+                    
+                    // Hide loading placeholders and show embeds
+                    setTimeout(() => {
+                        document.querySelectorAll('.video-embed-container.instagram').forEach(container => {
+                            const placeholder = container.querySelector('.loading-placeholder');
+                            const embedWrapper = container.querySelector('.instagram-embed-wrapper');
+                            
+                            if (placeholder && embedWrapper) {
+                                placeholder.style.display = 'none';
+                                embedWrapper.style.display = 'block';
+                            }
+                        });
+                    }, 2000);
+                }
+            };
+        }
+    </script>
+</body>
+</html>

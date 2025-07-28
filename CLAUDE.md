@@ -4,368 +4,213 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Tribit Social Media Analytics Dashboard** - a collection of standalone HTML files that visualize social media performance metrics for Tribit (audio/electronics brand). The dashboards track Key Opinion Leader (KOL) and self-generated content performance across YouTube, TikTok, Instagram, and advertising platforms.
+**Tribit Social Media Analytics Dashboard** - Static HTML dashboards visualizing social media metrics for Tribit (audio/electronics brand) across YouTube, TikTok, Instagram, and advertising platforms.
 
-### Key Characteristics
-- **Architecture**: Static HTML files with inline CSS/JavaScript (no build process)
-- **Data**: Hardcoded within `<script>` tags in each HTML file
+- **Architecture**: Standalone HTML files with inline CSS/JavaScript (no build process)
+- **Data**: Hardcoded in `<script>` tags within each HTML file
 - **Libraries**: ECharts 5.4.3 (primary), Chart.js (India KOL dashboard)
 - **Deployment**: Vercel static hosting
-- **Git Repositories**: 
-  - Primary: https://github.com/keevingfu/tribit2
-  - Mirror: https://github.com/keevingfu/tribit3
+- **Navigation**: Portal-based iframe system with hierarchical menu
 
 ## Commands
 
-### Development
 ```bash
-# Run locally (no build process required)
+# Development (no build required)
 open index.html                    # macOS
-python -m http.server 8000        # Python local server (then visit localhost:8000)
-npx http-server                   # Node.js local server
+python -m http.server 8000        # Python server
+npx http-server                   # Node.js server
 
-# Deploy to Vercel
+# Deployment
 vercel                            # Deploy to production
 vercel --prod                     # Force production deployment
 
-# Git operations
-git push origin main              # Push to primary repo (tribit2)
-git push tribit3 main            # Push to mirror repo
-git push origin main && git push tribit3 main  # Push to both
-./push_to_github.sh              # Use helper script (requires PAT setup)
-```
+# Git workflow
+git add .
+git commit -m "message"
+git push origin main              # Push to tribit3 (GitHub)
+./push_to_github.sh              # Helper script with PAT instructions
 
-### Testing
-```bash
-# No automated tests - manual testing required
-# Browser compatibility check
-open index.html           # Test in Chrome 90+, Firefox 88+, Safari 14+
-
-# Verify core functionality:
-# 1. Portal navigation and iframe loading
-# 2. Chart rendering (ECharts/Chart.js)
+# Testing checklist
+# 1. Portal navigation (index.html iframe loading)
+# 2. Chart rendering (ECharts/Chart.js initialization)
 # 3. Video embeds (YouTube/TikTok/Instagram)
-# 4. Responsive design breakpoints
-# 5. Keyboard shortcuts in portal
+# 4. Responsive design (mobile/desktop)
+# 5. Keyboard shortcuts (↑↓ navigation)
 ```
 
-## Architecture Overview
+## Architecture
 
-### Portal System (index.html)
-- Hierarchical navigation menu with 5 main categories
-- Iframe-based content loading for dashboard switching
-- Keyboard shortcuts for quick navigation
-- Categories:
-  1. Performance Reports (weekly/trend analysis)
-  2. Self-KOC Analytics (platform-specific)
-  3. Quarterly Analysis (Q1/Q2 2025)
-  4. KOL/KOC Network (global/regional)
-  5. Advertising Campaigns (multi-platform)
-
-### Dashboard Structure
 ```
 tribit3/
-├── index.html                    # Portal navigation
+├── index.html                    # Portal with iframe navigation
 ├── tribit-selfkoc-*.html        # Self-generated content dashboards
-├── tribit-kol-*.html            # KOL performance dashboards
-├── tribit-ads-*.html            # Advertising campaign dashboards
-├── data/                        # CSV data files (not actively used)
-├── vercel.json                  # Deployment configuration
-└── push_to_github.sh           # Git push helper script
+├── tribit-kol-*.html            # KOL performance dashboards  
+├── tribit-ads-*.html            # Advertising dashboards
+├── data/                        # CSV files (reference only)
+├── vercel.json                  # Deployment config
+└── push_to_github.sh            # GitHub push helper
 ```
 
-## Key Implementation Patterns
+### Portal System (index.html)
+- **Navigation Structure**: 3-tier hierarchy (Section → Category → Dashboard)
+- **Sections**: Self-KOC, Global-KOL, Advertising Campaigns
+- **Iframe Loading**: Dynamic dashboard loading with loading states
+- **Keyboard Shortcuts**: Arrow keys (↑↓) for navigation
+- **State Management**: Active item tracking, section collapsing
 
-### Data Structure Pattern
+### Dashboard Architecture
+- **Standalone Files**: Each dashboard is self-contained HTML
+- **Data Location**: JavaScript arrays in `<script>` tags at bottom of file
+- **Chart Libraries**: ECharts instances initialized per chart container
+- **Styling**: Inline CSS with glassmorphism effects
+- **Animations**: CSS keyframes (fadeIn, fadeInUp, fadeInDown)
+
+## Key Code Patterns
+
+### Portal Navigation (index.html)
 ```javascript
-// Standard video data structure used across dashboards
-const videoData = [
-    {
-        no: 1,                    // Sequential number
-        channel: 'youtube',       // Platform: youtube, tiktok, instagram
-        account: '@username',     // Creator account
-        url: 'https://...',      // Full URL to video
-        likes: 103,              // Engagement metrics
-        comments: 0,
-        views: 33000,
-        date: '2025/4/4',        // YYYY/M/D format
-        videoId: 'xxx'           // Platform-specific ID for embedding
-    }
-];
+// Navigation item structure
+<a class="nav-item" data-page="dashboard.html">
+    <span class="nav-item-icon">📊</span>
+    Dashboard Name
+</a>
+
+// Section with categories
+<div class="nav-section">
+    <div class="nav-section-title">Section Name</div>
+    <div class="nav-submenu">
+        <div class="nav-category">
+            <div class="nav-category-title">Category</div>
+            <div class="nav-category-items"><!-- nav-items --></div>
+        </div>
+    </div>
+</div>
 ```
 
-### Chart Initialization (ECharts)
+### Video Data Structure
+```javascript
+const videoData = [{
+    no: 1,
+    channel: 'youtube',      // youtube, tiktok, instagram
+    account: '@username',
+    url: 'https://...',
+    likes: 103,
+    comments: 0,
+    views: 33000,
+    date: '2025/4/4',       // YYYY/M/D format
+    videoId: 'xxx',         // YouTube/TikTok only
+    postId: 'xxx'           // Instagram only
+}];
+```
+
+### ECharts Initialization
 ```javascript
 const chart = echarts.init(document.getElementById('chartId'));
 chart.setOption({
-    // Standard configuration includes:
-    title: { text: 'Chart Title', textStyle: { color: '#fff' } },
-    tooltip: { trigger: 'axis' },
-    legend: { data: ['Series1', 'Series2'] },
+    backgroundColor: 'transparent',
+    title: { text: 'Title', textStyle: { color: '#fff' } },
+    tooltip: { 
+        trigger: 'axis',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        borderColor: '#667eea'
+    },
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
     // Data arrays embedded directly
+});
+
+// Responsive handling
+window.addEventListener('resize', () => {
+    chart.resize();
 });
 ```
 
-### Video Embed Patterns
-- **YouTube**: `<iframe src="https://www.youtube.com/embed/{videoId}">`
-- **TikTok**: `<iframe src="https://www.tiktok.com/embed/v2/{videoId}">`
-- **Instagram**: Enhanced implementation with loading states (see Instagram Video Preview section below)
+### Platform-Specific Video Embeds
 
-### Common CSS Patterns
-- Glassmorphism: `backdrop-filter: blur(10px); background: rgba(255,255,255,0.1);`
-- Gradient text: `background: linear-gradient(...); -webkit-background-clip: text;`
-- Card hover: `transform: translateY(-5px); box-shadow: 0 10px 30px rgba(...);`
-- Animations: `fadeIn`, `fadeInUp`, `fadeInDown` classes
+#### YouTube Shorts
+```javascript
+// Modal preview pattern
+const iframe = document.createElement('iframe');
+iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+iframe.width = "360";
+iframe.height = "640";
+iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media";
+```
 
-## Critical Development Notes
-
-### Data Management
-- All data is **hardcoded** in `<script>` tags within each HTML file
-- No API integration or dynamic data loading
-- CSV files in `data/` directory exist but are not actively used
-- To update data: Edit the JavaScript arrays directly in each HTML file
-
-### Platform-Specific Considerations
-- **YouTube**: Shorts use 9:16 aspect ratio, require valid video IDs
-- **TikTok**: Embeds may be blocked by some networks/browsers
-- **Instagram**: Enhanced implementation with loading placeholders and progressive display
-- **All platforms**: Test embeds with real video IDs before deployment
-
-### Instagram Video Preview Implementation
-**Standard Pattern** (Updated January 2025):
+#### TikTok
 ```html
-<!-- HTML Structure -->
+<blockquote class="tiktok-embed" 
+    cite="${video.url}" 
+    data-video-id="${videoId}" 
+    style="max-width: 605px; min-width: 325px;">
+</blockquote>
+<script async src="https://www.tiktok.com/embed.js"></script>
+```
+
+#### Instagram (Updated Pattern)
+```html
+<!-- Loading state -->
 <div class="loading-placeholder">
     <div class="spinner"></div>
     <div>Loading Instagram Reel...</div>
 </div>
+<!-- Embed container -->
 <div class="instagram-embed-container" style="display: none;">
     <blockquote class="instagram-media" 
         data-instgrm-captioned 
-        data-instgrm-permalink="{url}?utm_source=ig_embed&utm_campaign=loading" 
-        data-instgrm-version="14"
-        style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);">
+        data-instgrm-permalink="${url}?utm_source=ig_embed&utm_campaign=loading" 
+        data-instgrm-version="14">
     </blockquote>
 </div>
+<script async src="//www.instagram.com/embed.js"></script>
 ```
 
-**Required CSS**:
-```css
-.instagram-media {
-    background: white;
-    border: 0;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    margin: 0 !important;
-    max-width: 100% !important;
-    min-width: 100% !important;
-    padding: 0;
-}
+### CSS Patterns
+- Glassmorphism: `backdrop-filter: blur(10px); background: rgba(255,255,255,0.1);`
+- Animations: `fadeIn`, `fadeInUp`, `fadeInDown` classes
+- Dark theme with `#0a0a0a` background
+- Responsive breakpoint: `@media (max-width: 768px)`
 
-.instagram-embed-container {
-    position: relative;
-    width: 100%;
-    padding-bottom: 125%; /* Approximate Instagram embed ratio */
-    overflow: hidden;
-}
+## Development Workflow
 
-.loading-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    color: #ccc;
-}
+### Adding New Dashboard
+1. Copy similar dashboard as template (e.g., `tribit-selfkoc-tk-q1.html`)
+2. Update `videoData` array with new data
+3. Modify chart configurations and IDs
+4. Add navigation entry in `index.html`:
+   ```html
+   <a class="nav-item" data-page="new-dashboard.html">
+       <span class="nav-item-icon">📊</span>
+       New Dashboard Name
+   </a>
+   ```
+5. Test locally with HTTP server
+6. Deploy: `vercel`
 
-.loading-placeholder .spinner {
-    width: 50px;
-    height: 50px;
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    border-top: 3px solid #e1306c;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 20px;
-}
+### Updating Dashboard Data
+1. Open HTML file in editor
+2. Locate `const videoData = [` section
+3. Update JavaScript array values
+4. Save and test rendering
+5. Commit changes: `git add . && git commit -m "Update dashboard data"`
+6. Push: `git push origin main`
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+### Data Update Locations
+- **Video data**: Search for `const videoData = [`
+- **Chart data**: Look for `series:` within `chart.setOption()`
+- **Statistics**: Find calculation sections after data arrays
+- **Dates**: Update both data arrays and title text
 
-@media (max-width: 768px) {
-    .instagram-embed-container {
-        padding-bottom: 150%;
-    }
-}
-```
+## Common Issues & Solutions
+- **Charts not rendering**: Check element ID matches `echarts.init()` call
+- **Video embeds broken**: Verify video IDs and platform-specific embed formats
+- **Portal navigation fails**: Ensure dashboard filename in `data-page` attribute exists
+- **CORS errors**: Use local HTTP server, not `file://` protocol
+- **Data not updating**: Clear browser cache after editing JavaScript arrays
+- **Instagram embeds not loading**: Check postId format and Instagram script loading
 
-**JavaScript Initialization**:
-```javascript
-function loadInstagramEmbeds() {
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = 'https://www.instagram.com/embed.js';
-    document.body.appendChild(script);
-    
-    script.onload = () => {
-        if (window.instgrm) {
-            window.instgrm.Embeds.process();
-            
-            // Hide loading placeholders and show embeds
-            document.querySelectorAll('.video-card').forEach(card => {
-                const placeholder = card.querySelector('.loading-placeholder');
-                const embedContainer = card.querySelector('.instagram-embed-container');
-                
-                if (placeholder && embedContainer) {
-                    setTimeout(() => {
-                        placeholder.style.display = 'none';
-                        embedContainer.style.display = 'block';
-                    }, 1000);
-                }
-            });
-        }
-    };
-}
-```
+## Platform Notes
 
-### Performance Optimization
-- Video embeds use lazy loading
-- Charts render on page load (no dynamic updates)
-- Large datasets may impact initial load time
-
-## Dashboard Categories & Features
-
-### 1. Performance Reports
-- Weekly trend analysis (10-week periods)
-- Week-over-week comparison reports
-- Target achievement tracking
-- Performance heatmaps
-
-### 2. Self-KOC Analytics
-- Platform-specific dashboards (YouTube, TikTok, Instagram)
-- Video preview functionality with platform-specific embeds
-- Engagement metrics and creator analytics
-- Quarterly vs weekly performance comparisons
-
-### 3. KOL/KOC Network
-- Global performance tracking
-- Regional analysis (India, Europe, US)
-- Creator portfolio management
-- Network growth metrics
-
-### 4. Advertising Campaigns
-- Multi-platform ad performance (Amazon SBV, Meta, YouTube Shorts)
-- Shopify e-commerce integration
-- ROI and conversion tracking
-- Campaign efficiency metrics
-
-### 5. Insights & Recommendations
-- Data-driven analysis sections in each dashboard
-- Actionable recommendations
-- Critical alerts for performance issues
-- All content in English
-
-## Current Project Status (January 2025)
-
-### Repository Synchronization
-- **Last Update**: January 21, 2025
-- **Current Branch**: main
-- **Latest Commit**: Updated Instagram video preview implementation and navigation structure
-- **Sync Status**: ⚠️ Pending sync to both repositories
-  - Primary: https://github.com/keevingfu/tribit2
-  - Mirror: https://github.com/keevingfu/tribit3
-- **Files Modified**: 6 files (5 dashboard HTML files + index.html)
-
-### File Inventory (23 files total)
-- **Dashboard HTML Files**: 21 files
-  - Performance Reports: 3 files
-  - Self-KOC Analytics: 5 files (all updated with new Instagram embeds)
-  - Quarterly Analysis: 5 files (2 updated with new Instagram embeds)
-  - KOL/KOC Network: 2 files
-  - Advertising Campaigns: 5 files
-  - Portal: 1 file (index.html - navigation structure updated)
-- **Data Files**: 3 CSV files in `data/` directory
-- **Configuration**: vercel.json
-- **Documentation**: README.md, CLAUDE.md, GITHUB_PUSH_INSTRUCTIONS.md
-- **Scripts**: push_to_github.sh
-
-### Files Updated (January 21, 2025)
-1. `index.html` - Navigation menu reorganized with 3-tier hierarchy
-2. `tribit-selfkoc-ins-April-July-2025.html` - Instagram embeds updated
-3. `tribit-selfkoc-overview-q1.html` - Instagram embeds updated
-4. `tribit-selfkoc-overview-april-july-2025.html` - Instagram embeds updated
-5. `tribit-selfkoc-ins-q1.html` - Instagram embeds updated
-6. `tribit-selfkoc-weekly-report-July11-16-2025.html` - Instagram embeds updated
-
-### Recent Changes
-- **January 21, 2025**: Updated Instagram video preview implementation across all dashboards
-  - Added loading placeholders with spinner animations
-  - Implemented progressive display (loading state → content)
-  - Enhanced responsive behavior for mobile devices
-  - Standardized Instagram embed patterns across 5 dashboard files
-- **January 21, 2025**: Reorganized navigation menu in index.html
-  - Implemented 3-tier hierarchical menu structure for Self-KOC section
-  - Added category grouping by platform and time dimensions
-  - Fixed navigation link for Instagram Apr-Jul 2025 dashboard
-- **January 17, 2025**: Restructured CLAUDE.md for better developer experience
-- Consolidated documentation into practical sections
-- Added quick reference guides for common tasks
-- Improved command documentation with executable examples
-- Streamlined content to focus on essential information
-
-### Deployment Status
-- **Platform**: Vercel (static hosting)
-- **Configuration**: vercel.json configured for static file serving
-- **Ready for Deployment**: Yes - run `vercel` command
-- **Alternative**: GitHub Desktop GUI for repository management
-
-### Data Status
-- All dashboards use hardcoded data (no external API dependencies)
-- Data last updated: July 2025 (based on dashboard content)
-- CSV files present but not actively used by dashboards
-
-
-
-
-## Brand Guidelines
-
-### Color Palette
-- **Tribit Brand**: Primary `#0066cc`, Secondary `#ff6600`
-- **YouTube**: `#FF0000` / `#ff4444`
-- **Instagram**: `#E1306C` / Gradient: `#833AB4, #FD1D1D, #FCAF45`
-- **TikTok**: Platform-specific colors
-- **Dark Theme**: Background `#0a0a0a`, Cards `rgba(22, 33, 62, 0.6)`
-
-### Design System
-- **Typography**: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto
-- **Effects**: Glassmorphism with `backdrop-filter: blur(10px)`
-- **Animations**: fadeIn (0.8s), fadeInUp (0.8s, 50px), fadeInDown (0.8s, -50px)
-- **Grid Layout**: Responsive 3-column to 1-column on mobile
-- **Card Hover**: `translateY(-5px)` with enhanced shadow
-
-## Quick Reference
-
-### Adding a New Dashboard
-1. Copy an existing dashboard HTML file as template
-2. Update the title and navigation in index.html
-3. Replace data arrays in `<script>` tags
-4. Modify chart configurations as needed
-5. Update insights and recommendations sections
-6. Test all interactive elements and embeds
-7. Deploy using `vercel`
-
-### Updating Data
-1. Locate the dashboard HTML file
-2. Find the `<script>` section with data arrays
-3. Update the JavaScript objects directly
-4. Test chart rendering
-5. Commit and push changes
-
-### Common Issues
-- **Charts not rendering**: Check element IDs match initialization code
-- **Video embeds broken**: Verify video IDs are valid and platforms accessible
-- **Styling issues**: Ensure CDN links are loading (check network tab)
-- **Portal navigation**: Verify iframe src paths in index.html
-- **Local development CORS**: Use a local server (not file://) for proper iframe loading
-- **Git push authentication**: Configure Personal Access Token for GitHub CLI access
+- **YouTube**: Shorts use 9:16 aspect ratio, modal preview supported
+- **TikTok**: May be blocked by some networks, uses standard embed
+- **Instagram**: Requires loading placeholders, progressive display
+- **All platforms**: Test with real video IDs before deployment
